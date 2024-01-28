@@ -23,7 +23,7 @@ def initial_population(data, matrix, free, filled, groups_empty_space, teachers_
             # check if class won't start one day and end on the next
             start_time = start_field[0]
             end_time = start_time + int(classs.duration) - 1
-            if start_time % 12 > end_time % 12:
+            if start_time % 9 > end_time % 9:
                 ind += 1
                 continue
 
@@ -141,7 +141,7 @@ def mutate_ideal_spot(matrix, data, ind_class, free, filled, groups_empty_space,
         # check if class won't start one day and end on the next
         start_time = start_field[0]
         end_time = start_time + int(classs.duration) - 1
-        if start_time % 12 > end_time % 12:
+        if start_time % 9 > end_time % 9:
             ind += 1
             continue
 

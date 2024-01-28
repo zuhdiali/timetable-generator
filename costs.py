@@ -57,9 +57,9 @@ def empty_space_groups_cost(groups_empty_space):
             a = times[i-1]
             b = times[i]
             diff = b - a
-            # classes are in the same day if their time div 12 is the same
-            if a // 12 == b // 12 and diff > 1:
-                empty_per_day[a // 12] += diff - 1
+            # classes are in the same day if their time div 9 is the same
+            if a // 9 == b // 9 and diff > 1:
+                empty_per_day[a // 9] += diff - 1
                 cost += diff - 1
 
         # compare current max with empty spaces per day for current group
@@ -91,9 +91,9 @@ def empty_space_teachers_cost(teachers_empty_space):
             a = times[i - 1]
             b = times[i]
             diff = b - a
-            # classes are in the same day if their time div 12 is the same
-            if a // 12 == b // 12 and diff > 1:
-                empty_per_day[a // 12] += diff - 1
+            # classes are in the same day if their time div 9 is the same
+            if a // 9 == b // 9 and diff > 1:
+                empty_per_day[a // 9] += diff - 1
                 cost += diff - 1
 
         # compare current max with empty spaces per day for current teacher
@@ -109,7 +109,7 @@ def free_hour(matrix):
     Checks if there is an hour without classes. If so, returns it in format 'day: hour', otherwise -1.
     """
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    hours = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     for i in range(len(matrix)):
         exists = True
@@ -119,7 +119,7 @@ def free_hour(matrix):
                 exists = False
 
         if exists:
-            return '{}: {}'.format(days[i // 12], hours[i % 12])
+            return '{}: {}'.format(days[i // 9], hours[i % 9])
 
     return -1
 

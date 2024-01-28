@@ -30,15 +30,16 @@ def load_data(file_path, teachers_empty_space, groups_empty_space, subjects_orde
     class_list = []
 
     for cl in data['Casovi']:
-        new_group = cl['Grupe']
-        new_teacher = cl['Nastavnik']
+        new_group = cl['Groups']
+        new_teacher = cl['Professor']
 
         # initialise for empty space of teachers
         if new_teacher not in teachers_empty_space:
             teachers_empty_space[new_teacher] = []
 
-        new = Class(new_group, new_teacher, cl['Predmet'], cl['Tip'], cl['Trajanje'], cl['Ucionica'])
-        # add groups
+        new = Class(new_group, new_teacher,
+                    cl['Subject'], cl['Type'], cl['Duration'], cl['Classroom'])
+        # add groupsType
         for group in new_group:
             if group not in groups:
                 groups[group] = len(groups)
@@ -93,7 +94,7 @@ def set_up(num_of_columns):
     :param num_of_columns: number of classrooms
     :return: matrix, free
     """
-    w, h = num_of_columns, 60                                          # 5 (workdays) * 12 (work hours) = 60
+    w, h = num_of_columns, 45                                          # 5 (workdays) * 9 (work hours) = 60
     matrix = [[None for x in range(w)] for y in range(h)]
     free = []
 
@@ -109,7 +110,7 @@ def show_timetable(matrix):
     Prints timetable matrix.
     """
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    hours = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # print heading for classrooms
     for i in range(len(matrix[0])):
@@ -129,11 +130,70 @@ def show_timetable(matrix):
             print('{:6s} '.format(str(matrix[i][j])), end='')
         print()
         h_cnt += 1
-        if h_cnt == 12:
+        if h_cnt == 9:
             h_cnt = 0
             d_cnt += 1
             print()
 
+
+# def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, teachers_empty_space, subjects_order):
+#     """
+#     Writes statistics and schedule to file.
+#     """
+#     f = open('solution_files/sol_' + filepath, 'w')
+
+#     f.write('-------------------------- STATISTICS --------------------------\n')
+#     cost_hard = check_hard_constraints(matrix, data)
+#     if cost_hard == 0:
+#         f.write('\nHard constraints satisfied: 100.00 %\n')
+#     else:
+#         f.write('Hard constraints NOT satisfied, cost: {}\n'.format(cost_hard))
+#     f.write('Soft constraints satisfied: {:.02f} %\n\n'.format(
+#         subjects_order_cost(subjects_order)))
+
+#     empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(
+#         groups_empty_space)
+#     f.write('TOTAL empty space for all GROUPS and all days: {}\n'.format(empty_groups))
+#     f.write('MAX empty space for GROUP in day: {}\n'.format(max_empty_group))
+#     f.write('AVERAGE empty space for GROUPS per week: {:.02f}\n\n'.format(
+#         average_empty_groups))
+
+#     empty_teachers, max_empty_teacher, average_empty_teachers = empty_space_teachers_cost(
+#         teachers_empty_space)
+#     f.write('TOTAL empty space for all TEACHERS and all days: {}\n'.format(
+#         empty_teachers))
+#     f.write('MAX empty space for TEACHER in day: {}\n'.format(max_empty_teacher))
+#     f.write('AVERAGE empty space for TEACHERS per week: {:.02f}\n\n'.format(
+#         average_empty_teachers))
+
+#     f_hour = free_hour(matrix)
+#     if f_hour != -1:
+#         f.write('Free term -> {}\n'.format(f_hour))
+#     else:
+#         f.write('NO hours without classes.\n')
+
+#     groups_dict = {}
+#     for group_name, group_index in data.groups.items():
+#         if group_index not in groups_dict:
+#             groups_dict[group_index] = group_name
+#     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+#     hours = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+#     f.write('\n--------------------------- SCHEDULE ---------------------------')
+#     for class_index, times in filled.items():
+#         c = data.classes[class_index]
+#         groups = ' '
+#         for g in c.groups:
+#             groups += groups_dict[g] + ', '
+#         f.write('\n\nClass {}\n'.format(class_index))
+#         f.write('Teacher: {} \nSubject: {} \nGroups:{} \nType: {} \nDuration: {} hour(s)'
+#                 .format(c.teacher, c.subject, groups[:len(groups) - 2], c.type, c.duration))
+#         room = str(data.classrooms[times[0][1]])
+#         f.write('\nClassroom: {:2s}\nTime: {}'.format(
+#             room[:room.rfind('-')], days[times[0][0] // 9]))
+#         for time in times:
+#             f.write(' {}'.format(hours[time[0] % 9]))
+#     f.close()
 
 def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, teachers_empty_space, subjects_order):
     """
@@ -147,17 +207,23 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
         f.write('\nHard constraints satisfied: 100.00 %\n')
     else:
         f.write('Hard constraints NOT satisfied, cost: {}\n'.format(cost_hard))
-    f.write('Soft constraints satisfied: {:.02f} %\n\n'.format(subjects_order_cost(subjects_order)))
+    f.write('Soft constraints satisfied: {:.02f} %\n\n'.format(
+        subjects_order_cost(subjects_order)))
 
-    empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(groups_empty_space)
+    empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(
+        groups_empty_space)
     f.write('TOTAL empty space for all GROUPS and all days: {}\n'.format(empty_groups))
     f.write('MAX empty space for GROUP in day: {}\n'.format(max_empty_group))
-    f.write('AVERAGE empty space for GROUPS per week: {:.02f}\n\n'.format(average_empty_groups))
+    f.write('AVERAGE empty space for GROUPS per week: {:.02f}\n\n'.format(
+        average_empty_groups))
 
-    empty_teachers, max_empty_teacher, average_empty_teachers = empty_space_teachers_cost(teachers_empty_space)
-    f.write('TOTAL empty space for all TEACHERS and all days: {}\n'.format(empty_teachers))
+    empty_teachers, max_empty_teacher, average_empty_teachers = empty_space_teachers_cost(
+        teachers_empty_space)
+    f.write('TOTAL empty space for all TEACHERS and all days: {}\n'.format(
+        empty_teachers))
     f.write('MAX empty space for TEACHER in day: {}\n'.format(max_empty_teacher))
-    f.write('AVERAGE empty space for TEACHERS per week: {:.02f}\n\n'.format(average_empty_teachers))
+    f.write('AVERAGE empty space for TEACHERS per week: {:.02f}\n\n'.format(
+        average_empty_teachers))
 
     f_hour = free_hour(matrix)
     if f_hour != -1:
@@ -170,7 +236,7 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
         if group_index not in groups_dict:
             groups_dict[group_index] = group_name
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    hours = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     f.write('\n--------------------------- SCHEDULE ---------------------------')
     for class_index, times in filled.items():
@@ -182,9 +248,11 @@ def write_solution_to_file(matrix, data, filled, filepath, groups_empty_space, t
         f.write('Teacher: {} \nSubject: {} \nGroups:{} \nType: {} \nDuration: {} hour(s)'
                 .format(c.teacher, c.subject, groups[:len(groups) - 2], c.type, c.duration))
         room = str(data.classrooms[times[0][1]])
-        f.write('\nClassroom: {:2s}\nTime: {}'.format(room[:room.rfind('-')], days[times[0][0] // 12]))
+        f.write('\nClassroom: {:2s}\nDay: {}'.format(
+            room[:room.rfind('-')], days[times[0][0] // 9]))
+        f.write('\nTime: [')
         for time in times:
-            f.write(' {}'.format(hours[time[0] % 12]))
+            f.write(' {}'.format(hours[time[0] % 9]))
     f.close()
 
 
@@ -197,17 +265,22 @@ def show_statistics(matrix, data, subjects_order, groups_empty_space, teachers_e
         print('Hard constraints satisfied: 100.00 %')
     else:
         print('Hard constraints NOT satisfied, cost: {}'.format(cost_hard))
-    print('Soft constraints satisfied: {:.02f} %\n'.format(subjects_order_cost(subjects_order)))
+    print('Soft constraints satisfied: {:.02f} %\n'.format(
+        subjects_order_cost(subjects_order)))
 
-    empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(groups_empty_space)
+    empty_groups, max_empty_group, average_empty_groups = empty_space_groups_cost(
+        groups_empty_space)
     print('TOTAL empty space for all GROUPS and all days: ', empty_groups)
     print('MAX empty space for GROUP in day: ', max_empty_group)
-    print('AVERAGE empty space for GROUPS per week: {:.02f}\n'.format(average_empty_groups))
+    print('AVERAGE empty space for GROUPS per week: {:.02f}\n'.format(
+        average_empty_groups))
 
-    empty_teachers, max_empty_teacher, average_empty_teachers = empty_space_teachers_cost(teachers_empty_space)
+    empty_teachers, max_empty_teacher, average_empty_teachers = empty_space_teachers_cost(
+        teachers_empty_space)
     print('TOTAL empty space for all TEACHERS and all days: ', empty_teachers)
     print('MAX empty space for TEACHER in day: ', max_empty_teacher)
-    print('AVERAGE empty space for TEACHERS per week: {:.02f}\n'.format(average_empty_teachers))
+    print('AVERAGE empty space for TEACHERS per week: {:.02f}\n'.format(
+        average_empty_teachers))
 
     f_hour = free_hour(matrix)
     if f_hour != -1:
