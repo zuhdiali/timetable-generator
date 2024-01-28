@@ -6,33 +6,34 @@ def subjects_order_cost(subjects_order):
     it means that that subject does not have that type of class.
     :return: percentage of satisfied constraints
     """
-    # number of subjects not in right order
-    cost = 0
-    # number of all orders of subjects
-    total = 0
+    # # number of subjects not in right order
+    # cost = 0
+    # # number of all orders of subjects
+    # total = 0
 
-    for (subject, group_index), times in subjects_order.items():
+    # for (subject, group_index), times in subjects_order.items():
 
-        if times[0] != -1 and times[1] != -1:
-            total += 1
-            # P after V
-            if times[0] > times[1]:
-                cost += 1
+    #     if times[0] != -1 and times[1] != -1:
+    #         total += 1
+    #         # P after V
+    #         if times[0] > times[1]:
+    #             cost += 1
 
-        if times[0] != -1 and times[2] != -1:
-            total += 1
-            # P after L
-            if times[0] > times[2]:
-                cost += 1
+    #     if times[0] != -1 and times[2] != -1:
+    #         total += 1
+    #         # P after L
+    #         if times[0] > times[2]:
+    #             cost += 1
 
-        if times[1] != -1 and times[2] != -1:
-            total += 1
-            # V after L
-            if times[1] > times[2]:
-                cost += 1
+    #     if times[1] != -1 and times[2] != -1:
+    #         total += 1
+    #         # V after L
+    #         if times[1] > times[2]:
+    #             cost += 1
 
     # print(cost, total)
-    return 100 * (total - cost) / total
+    # return 100 * (total - cost) / total
+    return 0
 
 
 def empty_space_groups_cost(groups_empty_space):
@@ -141,19 +142,23 @@ def hard_constraints_cost(matrix, data):
     cost_group = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            field = matrix[i][j]                                        # for every field in matrix
+            # for every field in matrix
+            field = matrix[i][j]
             if field is not None:
-                c1 = data.classes[field]                                # take class from that field
+                # take class from that field
+                c1 = data.classes[field]
 
                 # calculate loss for classroom
                 if j not in c1.classrooms:
                     cost_classrooms += 1
                     cost_class[field] += 1
 
-                for k in range(j + 1, len(matrix[i])):                  # go through the end of row
+                # go through the end of row
+                for k in range(j + 1, len(matrix[i])):
                     next_field = matrix[i][k]
                     if next_field is not None:
-                        c2 = data.classes[next_field]                   # take class of that field
+                        # take class of that field
+                        c2 = data.classes[next_field]
 
                         # calculate loss for teachers
                         if c1.teacher == c2.teacher:
@@ -180,19 +185,23 @@ def check_hard_constraints(matrix, data):
     overlaps = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            field = matrix[i][j]                                    # for every field in matrix
+            # for every field in matrix
+            field = matrix[i][j]
             if field is not None:
-                c1 = data.classes[field]                            # take class from that field
+                # take class from that field
+                c1 = data.classes[field]
 
                 # calculate loss for classroom
                 if j not in c1.classrooms:
                     overlaps += 1
 
-                for k in range(len(matrix[i])):                     # go through the end of row
+                # go through the end of row
+                for k in range(len(matrix[i])):
                     if k != j:
                         next_field = matrix[i][k]
                         if next_field is not None:
-                            c2 = data.classes[next_field]           # take class of that field
+                            # take class of that field
+                            c2 = data.classes[next_field]
 
                             # calculate loss for teachers
                             if c1.teacher == c2.teacher:
